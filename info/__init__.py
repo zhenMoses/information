@@ -27,7 +27,7 @@ def write_log(config_class):
 
     # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小:100M、保存的日志文件个数上限
     # backCount=10 是指log文件存储不足,最多复制10个文件
-    file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
+    file_log_handler = RotatingFileHandler("./logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
     # 创建日志记录的格式 日志等级 输入日志信息的文件名 行数 日志信息
 
     formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
