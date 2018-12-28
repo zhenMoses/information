@@ -1,5 +1,5 @@
 from redis import StrictRedis
-import  logging
+import logging
 # 0.创建配置类(父类)
 class Config(object):
     """自定义配置类,将配置信息以属性的方式罗列即可"""
@@ -40,7 +40,7 @@ class ProductionConfig(Config):
     """线上模式的配置类"""
     DEBUG = False
 #     设置日志级别
-    LOG_LEVEL=logging.ERROR
+    LOG_LEVEL = logging.ERROR
 
 # 给外界使用提供一个接口
 # 使用:config_dict["development"] --->DevelopmentConfig
