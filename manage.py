@@ -1,9 +1,9 @@
 
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info import  creat_app
+from info import  creat_app,db,redis_store
 
-app = creat_app()
+app = creat_app("development")
 
 #6. 创建数据管理对象,将app 交给管理对象管理
 manager = Manager(app)
