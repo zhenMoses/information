@@ -4,6 +4,9 @@ from flask_wtf.csrf import CSRFProtect
 from redis import StrictRedis
 from flask_session import Session
 from config import config_dict
+import logging
+
+from logging.handlers import RotatingFileHandler
 
 # 只是申明了db对象而已，并没有做真实的数据库初始化操作
 db = SQLAlchemy()
@@ -14,6 +17,28 @@ db = SQLAlchemy()
 redis_store = None  #  type:StrictRedis
 
 
+
+def write_log(config_class):
+    """日志使用"""
+
+    # 设置日志的记录等级
+    logging.basicConfig(level=config_class.LOG_LEVEL)  # 调试debug级
+
+    # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小:100M、保存的日志文件个数上限
+    # backCount=10 是指log文件存储不足,最多复制10个文件
+    file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
+    # 创建日志记录的格式 日志等级 输入日志信息的文件名 行数 日志信息
+
+    formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
+    # 为刚创建的日志记录器设置日志记录格式
+    file_log_handler.setFormatter(formatter)
+    # 为全局的日志工具对象（flask app使用的）添加日志记录器
+    logging.getLogger().addHandler(file_log_handler)
+
+
+
+
+
  # 将app封装起来，给外界调用提供一个借口
 # development --- 返回的是开发模式的app对象
 # production --- 返回的是线上模式的app对象
@@ -22,6 +47,7 @@ def creat_app(config_name):
     将与app相关联的配置封装到`工厂方法`中
     :return: app对象
     """
+
     #  1.创建app对象
     app = Flask(__name__)
     # 根据development健获取对应的配置类名
@@ -30,6 +56,9 @@ def creat_app(config_name):
     # ProductionConfig --->  线上模式的app对象
     app.config.from_object(config_class)
 
+
+    # 记录日志
+    write_log(config_class)
     # 2.创建mysql数据库对象
     # db = SQLAlchemy(app)
     # 延迟加载，懒加载思想，当app有值的时候才进行真正的初始化操作
