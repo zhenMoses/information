@@ -89,4 +89,7 @@ def creat_app(config_name):
     # 将蓝图的导入延迟到工厂方法中，真正需要注册蓝图的时候再导入，能够解决循环导入的文件
     from info.modules.index import index_bp
     app.register_blueprint(index_bp)
+
+    from info.modules.passport import passport_bp
+    app.register_blueprint(passport_bp)
     return app

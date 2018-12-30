@@ -3,7 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from info import constants
 from . import db
-
+import pymysql
+pymysql.install_as_MySQLdb()
 
 class BaseModel(object):
     """模型基类，为每个模型补充创建时间与更新时间"""
