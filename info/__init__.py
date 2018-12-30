@@ -66,7 +66,7 @@ def creat_app(config_name):
     db.init_app(app)
     # 3.创建redis数据库对象
     global redis_store
-    redis_store = StrictRedis(host=config_class.REDIS_HOST, port=config_class.REDIS_PORT)
+    redis_store = StrictRedis(host=config_class.REDIS_HOST, port=config_class.REDIS_PORT, decode_responses=True)
 
     """
        redis_store.set("age", 18)  ---->存储到redis ---0号数据库
@@ -79,7 +79,7 @@ def creat_app(config_name):
     # 2.提取表单中的csrf_token的值，或者ajax请求的头中的X-CSRFToken键对应的值
     # 3.对比这两个值是否相等
     """
-    CSRFProtect(app)
+    # CSRFProtect(app)
 
 
     # 5.借助Session调整flask.session的存储位置到redis中存储
