@@ -99,7 +99,7 @@ def send_sms_code():
 
     #3.1.1 real_image_code没有值:图片验证码过期了
     if not real_image_code:
-        return jsonify(errno=RET.NODATA,errmsg='数据不存在')
+        return jsonify(errno=RET.NODATA,errmsg='图片验证码过期')
 
     #3.1.2 real_image_code 有值,删除redis数据库的值,防止多次使用同一个验证码来进行多次验证码
     else:
@@ -298,3 +298,12 @@ def login():
         return jsonify(errno=RET.DATAERR,errmsg="用户信息异常")
 
     return jsonify(errno=RET.OK, errmsg="登陆成功")
+
+
+@passport_bp.route('/login_out',methods=['POST'])
+def login_out():
+    session.pop('user_id',None)
+    session.pop('mobile',None)
+    session.pop('nick_name',None)
+
+    return jsonify(errno=RET.OK,essmsg='退出成功')

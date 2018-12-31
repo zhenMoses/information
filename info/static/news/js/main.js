@@ -129,6 +129,9 @@ $(function(){
             data:JSON.stringify(params),
             contentType:'application/json',
             dataType:'json',
+            headers:{
+                "X-CSRFToken":getCookie("csrf_token")
+            },
             success:function (resp) {
                 if(resp.errno == '0'){
                     //登陆成功,刷新页面
@@ -185,6 +188,9 @@ $(function(){
         data: JSON.stringify(params),
         contentType: "application/json",
         dataType:'json',
+        headers:{
+                "X-CSRFToken":getCookie("csrf_token")
+            },
         success: function (resp) {
             if (resp.errno == "0"){
                 // 注册成功刷新当前界面
@@ -250,6 +256,9 @@ function sendSMSCode() {
         contentType: "application/json",
         // 响应数据的格式
         dataType: "json",
+        headers:{
+                "X-CSRFToken":getCookie("csrf_token")
+            },
         success: function (resp) {
             if (resp.errno == "0") {
                 // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
@@ -319,4 +328,24 @@ function generateUUID() {
         return (c=='x' ? r : (r&0x3|0x8)).toString(16);
     });
     return uuid;
+}
+
+function login_out(){
+
+    $.ajax({
+        url:'/passport/login_out',
+        type:'POST',
+        headers:{
+           "X-CSRFToken": getCookie("csrf_token")
+        },
+        success:function (resp) {
+            if(resp.errno=='0'){
+                location.reload()
+            } else{
+
+            }
+
+        }
+    })
+
 }

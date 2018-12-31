@@ -1,6 +1,6 @@
 from flask import Flask,session
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect,generate_csrf
 from redis import StrictRedis
 from flask_session import Session
 from config import config_dict
@@ -80,6 +80,16 @@ def creat_app(config_name):
     # 3.对比这两个值是否相等
     """
     # CSRFProtect(app)
+    #
+    # @app.after_request
+    def set_csrf_token(response):
+
+        csrf_token = generate_csrf()
+
+        response.set_cookie =("crsk_token",csrf_token)
+
+        return response
+
 
 
     # 5.借助Session调整flask.session的存储位置到redis中存储
