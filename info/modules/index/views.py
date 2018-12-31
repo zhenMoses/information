@@ -2,13 +2,13 @@ from info.modules.index import index_bp
 import logging
 from flask import current_app, session, jsonify
 from flask import  render_template
-from info.models import User
+from info.models import User,News
 from info.response_code import RET
-
+from info import constants
 
 @index_bp.route('/')
 def index():
-    # ----------用户登录成功后页面显示----------
+    # ----------1.用户登录成功后页面显示----------
     """
         #     1.查询用户,获取用户id
         # 2.根据用户id获取用户对象
@@ -35,12 +35,41 @@ def index():
     """
 
     user_dict = user.to_dict() if user else None
+
+
+
+
+
+
+    #-------------2.查询新闻点击排行数据展示--------------
+
+
+
+    try:
+        news_rank_list = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="查询新闻数据异常")
+
+    news_list_dict=[]
+    # if news_rank_list:
+    #     for news in news_rank_list:
+    #         news_list=news.to_dict()
+    #         news_list_dict.append(news_list)
+
+    for news in news_rank_list if news_rank_list else []:
+        news_list_dict.append(news.to_dict())
+
     # 4.组织响应数据
-    data ={
-        "user_info": user_dict
+    data = {
+        "user_info": user_dict,
+        "chick_news_list": news_list_dict
     }
     # 5.返回渲染页面
     return render_template("news/index.html", data=data)
+
+
+
 
 
 @index_bp.route('/favicon.ico')
