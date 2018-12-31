@@ -233,3 +233,68 @@ def register():
 
     # 注册成功
     return jsonify(errno=RET.OK,errmsg="注册成功")
+
+
+@passport_bp.route('/login', methods=['POST'])
+def login():
+    """登陆接口的实现"""
+    """
+        1.获取参数
+            1.1获取手机号monile 密码:password
+            
+        2.检验参数
+            2.1 不能为空
+            2.2手机正则判断
+        3.逻辑处理
+            3.1 根据手机号码去查询当前用户user
++           3.2 使用user对象判断用户填写的密码是否跟数据库里的一致
++            3.3 使用session记录用户登录信息
++           3.4 修改用户最后一次登录时间
+        4.返回值
+    
+    
+    """
+    # 1.1获取手机号mobile 密码:password
+    param_dict = request.json
+
+    mobile = param_dict.get('mobile')
+    password = param_dict.get('password')
+
+    # 2.1 不能为空
+    if not all([mobile, password]):
+        return jsonify(errno=RET.PARAMERR,errmsg="参数不足")
+    # 2.2手机正则判断
+    if not re.match('1[3456789][0-9]{9}$', mobile):
+        current_app.logger.error("手机格式错误")
+        return jsonify(errno=RET.PARAMERR,errmsg="手机格式错误")
+
+    try:
+        # 3.1 根据手机号码去查询当前用户user
+        user=User.query.filter(User.mobile == mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="查询用户信息异常")
+
+    if not user:
+        return jsonify(errno=RET.NODATA,errmsg="查询数据不存在")
+
+    # 3.2 使用user对象判断用户填写的密码是否跟数据库里的一致
+    if not user.check_passowrd(password):
+        return jsonify(errno=RET.DATAERR,errmsg="密码填写错误")
+
+    # 3.3 使用session记录用户登录信息
+    session['user_id'] = user.id
+    session['user_mobile'] = user.mobile
+    session['nick_name'] = user.nick_name
+    # 3.4 修改用户最后一次登录时间
+    user.last_login = datetime.now()
+    # 保存到数据库
+    try:
+        # 如果是修改不需要再add只需要提交修改即可
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DATAERR,errmsg="用户信息异常")
+
+    return jsonify(errno=RET.OK, errmsg="登陆成功")
