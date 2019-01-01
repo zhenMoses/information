@@ -7,7 +7,7 @@ from config import config_dict
 import logging
 
 from logging.handlers import RotatingFileHandler
-
+from info.utils.common import do_index_class
 
 # 只是申明了db对象而已，并没有做真实的数据库初始化操作
 db = SQLAlchemy()
@@ -91,9 +91,14 @@ def creat_app(config_name):
         return response
 
 
+    # 添加自定义过滤器
+    app.add_template_filter(do_index_class,"do_index_class")
+
 
     # 5.借助Session调整flask.session的存储位置到redis中存储
     Session(app)
+
+
 
     # 6.注册首页蓝图
     # 将蓝图的导入延迟到工厂方法中，真正需要注册蓝图的时候再导入，能够解决循环导入的文件
