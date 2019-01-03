@@ -9,6 +9,9 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information"
     # 开启数据库跟踪模式
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # 开启数据库自动提交
+    SQLALCHEMY_COMMIT_ON_TEARDOWN=True
+
     # 使用session记得添加加密字符串对session_id进行加密处理
     SECRET_KEY = "HFDSEUUHSKH$#*(UIWOhdsj&^fhsue4jfi6se&*^jiJFDKJSIECVMNBQER"
 

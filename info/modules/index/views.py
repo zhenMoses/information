@@ -1,12 +1,15 @@
 from info.modules.index import index_bp
 import logging
-from flask import current_app, session, jsonify,request
+from flask import current_app, session, jsonify, request, g
 from flask import  render_template
 from info.models import User, News, Category
 from info.response_code import RET
 from info import constants
+from info.utils.common import get_user_data
+
 
 @index_bp.route('/')
+@get_user_data
 def index():
     # ----------1.用户登录成功后页面显示----------
     """
@@ -17,16 +20,18 @@ def index():
         # 5.返回渲染页面
 
     """
-    #     1.查询用户,获取用户id
-    user_id = session.get("user_id")
-    # 2.根据用户id获取用户对象
-    user = None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
-            return jsonify(errno=RET.DBERR,essmsg="查询用户数据异常")
+    # 使用g对象传递user对象数据
+    user=g.user
+    # #     1.查询用户,获取用户id
+    # user_id = session.get("user_id")
+    # # 2.根据用户id获取用户对象
+    # user = None
+    # if user_id:
+    #     try:
+    #         user = User.query.get(user_id)
+    #     except Exception as e:
+    #         current_app.logger.error(e)
+    #         return jsonify(errno=RET.DBERR,essmsg="查询用户数据异常")
 
     # 3.将用户对象转成字典
     """

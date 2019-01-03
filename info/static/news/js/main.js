@@ -107,6 +107,7 @@ $(function(){
         var password = $(".login_form #password").val()
 
         if (!mobile) {
+
             $("#login-mobile-err").show();
             return;
         }
@@ -137,6 +138,7 @@ $(function(){
                     //登陆成功,刷新页面
                     location.reload();
                 }else{
+
                     $("#login-password-err").html(resp.errmsg)
                     $("#login-password-err").show()
                 }

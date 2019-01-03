@@ -59,18 +59,6 @@
         </ul>
 {% endblock %}
 {# 4.导入分类数据不同，重写CategoryBlock   #}
-{% block Categoryblock %}
-     <ul class="menu fl">
-        {% for category in data.categories %}
-            <li class="{% if loop.index0 ==0 %} active {% endif %}"
-                data-cid="{{ category.id }}">
-                <a href="javascript:;">{{ category.name }}</a>
-            </li>
-        {% endfor %}
-     </ul>
-{% endblock %}
+
 
 {# 5.作者卡片内容不同，重写Authorblock   #}
-{% block Authorblock %}
-
-{% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask,session
+from flask import Flask, session, g, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect,generate_csrf
 from redis import StrictRedis
@@ -7,7 +7,7 @@ from config import config_dict
 import logging
 
 from logging.handlers import RotatingFileHandler
-from info.utils.common import do_index_class
+from info.utils.common import do_index_class, get_user_data
 
 # 只是申明了db对象而已，并没有做真实的数据库初始化操作
 db = SQLAlchemy()
@@ -91,6 +91,14 @@ def creat_app(config_name):
         return response
 
 
+    @app.errorhandler(404)
+    @get_user_data
+    def handler_404(err):
+        user=g.user
+        data={
+            "user_info":user.to_dict() if user else None
+        }
+        return render_template('news/404.html',data=data)
     # 添加自定义过滤器
     app.add_template_filter(do_index_class,"do_index_class")
 

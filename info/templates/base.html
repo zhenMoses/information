@@ -24,7 +24,14 @@
             <a href="#" class="logo fl"><img src="../images/logo.png" alt="logo"></a>
         {# 4.导入分类数据不同，重写CategoryBlock   #}
         {% block Categoryblock %}
-
+            <ul class="menu fl">
+        {% for category in data.categories %}
+            <li class="{% if loop.index0 ==0 %} active {% endif %}"
+                data-cid="{{ category.id }}">
+                <a href="javascript:;">{{ category.name }}</a>
+            </li>
+        {% endfor %}
+     </ul>
 
 
         {% endblock %}
@@ -57,18 +64,23 @@
         {% block Authorblock %}
 
         {% endblock %}
+        {# 6.点击排行在404页面内容不同，需要在404页面中重写rankBlock   #}
+        {% block Rankblock %}
             <div class="rank_title">
                 <h3>点击排行</h3>
             </div>
-
-       <ul class="rank_list">
+        {% endblock %}
+            <ul class="rank_list">
                 {% for news in data.chick_news_list %}
                     <li><span class={{ loop.index |do_index_class }}>{{ loop.index }}</span><a href="/news/{{ news.id }}">{{ news.title }}</a></li>
                 {% endfor %}
             </ul>
+
         </div>
     </div>
-    <div class="footer">
+    {# 7.底部信息在404页面内容不同，需要在404页面中重写footerBlock   #}
+    {% block Bottomblock %}
+        <div class="footer">
         <div class="footer_links">
             <a href="">关于我们</a>
             <span>|</span>
@@ -83,6 +95,7 @@
 电话：010-****888    京ICP备*******8号
         </p>
     </div>
+    {% endblock %}
 
     <!-- 登录表单 -->
     <form class="login_form_con">
