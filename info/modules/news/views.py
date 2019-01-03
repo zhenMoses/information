@@ -7,6 +7,8 @@ from info.response_code import RET
 from info.utils.common import get_user_data
 
 
+
+
 @news_bp.route('/<int:news_id>')
 @get_user_data
 def news_detail(news_id):
@@ -65,20 +67,38 @@ def news_detail(news_id):
         # 标识当前用户已经收藏该新闻
         is_collected = True
 
+    # ---------------5.查询评论列表数据----------------
+
+    comment_list =[]
+    try:
+        comment_list= Comment.query.filter(Comment.news_id==news_id).order_by(Comment.create_time.desc()).all()
+
+    except Exception as e:
+        current_app.logger.error(e)
+    print(comment_list)
+    # 评论对象列表转字典列表
+    comment_dict=[]
+
+    for comment in comment_list if comment_list else []:
+        comment_list_dict=comment.to_dict()
+        comment_dict.append(comment_list_dict)
 
 
 
-
+    # 返回数据
     data = {
         "user_info": user_dict,
         "chick_news_list": news_list_dict,
         "news": news_dict,
-        "is_collected": is_collected
+        "is_collected": is_collected,
+        "comments": comment_dict
     }
 
 
 
     return render_template('news/detail.html',data=data)
+
+
 
 
 @news_bp.route('/news_collect',methods=['POST'])
@@ -145,6 +165,7 @@ def get_news_collect():
     return jsonify(errno=RET.OK, errmsg="成功")
 
 
+
 @news_bp.route('/news_comment',methods=['POST'])
 @get_user_data
 def news_comment():
@@ -163,12 +184,14 @@ def news_comment():
     """
 
     #1.获取当前用户对象 ,新闻对象id:news_id,获取评论内容:comment 区分主评论\子评论参数parent_id
-    param_dict = request.json()
-    news_id=param_dict.get("news_id")
-    comment=param_dict.get("comment")
-    parent_id=param_dict.get("parent_id")
-    user=g.user
-
+    param_dict = request.json
+    news_id = param_dict.get("news_id")
+    comment = param_dict.get("comment")
+    parent_id = param_dict.get("parent_id")
+    user = g.user
+    print(news_id)
+    print(comment)
+    print(user)
     #  2.1 非空判断
     if not all([news_id,comment]):
         current_app.logger.error("参数不足")
@@ -178,7 +201,7 @@ def news_comment():
     # 判断用户是否登录
     if not user:
         current_app.logger.error("用户尚未登录")
-        return jsonify(errno=RET.PARAMERR, errmsg="用户尚未登录")
+        return jsonify(errno=RET.NODATA, errmsg="用户尚未登录")
 
     #3.1根据news_id 查询当前新闻对象
     try:
@@ -188,11 +211,14 @@ def news_comment():
         return jsonify(errno=RET.DBERR,errmsg="查询新闻对象异常")
 
 
+    if not news:
+        return jsonify(errno=RET.NODATA, errmsg="该新闻不存在")
+
     # 3.2 创建评论对象，并给各个属性赋值，保存回数据库
-    comment_obj=Comment()
+    comment_obj = Comment()
     comment_obj.user_id=user.id
     comment_obj.news_id=news.id
-    comment_obj.content=Comment
+    comment_obj.content=comment
 
 
     if parent_id:
@@ -207,7 +233,9 @@ def news_comment():
         db.session.rollback()
         return jsonify(errno=RET.DBERR,errmsg="保存数据失败")
 
-    return jsonify(errno=RET.OK,errmsg="发布评论成功", data={"comment": comment_obj.to_dict()})
+    return jsonify(errno=RET.OK, errmsg="发布评论成功", data=comment_obj.to_dict())
+
+
 
 
 
