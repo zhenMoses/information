@@ -110,12 +110,16 @@ def creat_app(config_name):
 
     # 6.注册首页蓝图
     # 将蓝图的导入延迟到工厂方法中，真正需要注册蓝图的时候再导入，能够解决循环导入的文件
+    # 注册首页蓝图
     from info.modules.index import index_bp
     app.register_blueprint(index_bp)
-
+    # 登录注册模块的蓝图
     from info.modules.passport import passport_bp
     app.register_blueprint(passport_bp)
-
+    # 新闻模块的蓝图
     from info.modules.news import news_bp
     app.register_blueprint(news_bp)
+    # 个人中心模块的蓝图
+    from info.modules.profile import profile_bp
+    app.register_blueprint(profile_bp)
     return app
